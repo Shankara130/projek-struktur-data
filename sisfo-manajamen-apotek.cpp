@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stack>
 #include <queue>
+#include <vector>
+#include <unordered_map>
+#include <list>
 
 using namespace std;
 
@@ -122,6 +125,27 @@ void tampilkanKategori(TreeNode* node, int depth = 0) {
     }
 }
 
+class Graph {
+    unordered_map<string, list<string>> adjList;
+public:
+    void tambahRute(string kota1, string kota2) {
+        adjList[kota1].push_back(kota2);
+        adjList[kota2].push_back(kota1);
+    }
+
+    void tampilkanRute() {
+        for (auto& pair : adjList) {
+            cout << pair.first << " -> ";
+            for (string& kota : pair.second) {
+                cout << kota << " ";
+            }
+            cout << "\n";
+        }
+    }
+};
+
+Graph rutePengiriman;
+
 int main() {
     // Contoh penggunaan struct
     Obat paracetamol = {1, "Paracetamol", "Tablet", 100, 5000};
@@ -154,4 +178,12 @@ int main() {
     tambahKategori(obatKeras, "Antibiotik");
     tambahKategori(obatKeras, "Analgesik");
     tampilkanKategori(rootKategori);
+
+    // Contoh penggunaan graph
+    rutePengiriman.tambahRute("Jakarta", "Bandung");
+    rutePengiriman.tambahRute("Bandung", "Surabaya");
+    rutePengiriman.tambahRute("Jakarta", "Surabaya");
+    rutePengiriman.tampilkanRute();
+
+    return 0;
 }
