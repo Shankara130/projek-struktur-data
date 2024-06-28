@@ -102,6 +102,26 @@ void tampilkanSupplier() {
     }
 }
 
+struct TreeNode {
+    string kategori;
+    vector<TreeNode*> children;
+};
+
+TreeNode* rootKategori = new TreeNode{"Obat", {}};
+
+void tambahKategori(TreeNode* parent, string kategori) {
+    TreeNode* newNode = new TreeNode{kategori, {}};
+    parent->children.push_back(newNode);
+}
+
+void tampilkanKategori(TreeNode* node, int depth = 0) {
+    for (int i = 0; i < depth; ++i) cout << "-";
+    cout << node->kategori << "\n";
+    for (TreeNode* child : node->children) {
+        tampilkanKategori(child, depth + 1);
+    }
+}
+
 int main() {
     // Contoh penggunaan struct
     Obat paracetamol = {1, "Paracetamol", "Tablet", 100, 5000};
@@ -127,4 +147,11 @@ int main() {
     tambahSupplier(paracetamol);
     tambahSupplier(ibuprofen);
     tampilkanSupplier();
+
+    // Contoh penggunaan tree
+    TreeNode* obatKeras = new TreeNode{"Obat Keras", {}};
+    tambahKategori(rootKategori, "Obat Keras");
+    tambahKategori(obatKeras, "Antibiotik");
+    tambahKategori(obatKeras, "Analgesik");
+    tampilkanKategori(rootKategori);
 }
