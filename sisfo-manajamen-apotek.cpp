@@ -40,3 +40,20 @@ void layaniPelanggan() {
         cout << "Tidak ada pelanggan dalam antrian.\n";
     }
 }
+
+int main() {
+    // Contoh penggunaan struct
+    Obat paracetamol = {1, "Paracetamol", "Tablet", 100, 5000};
+    Obat ibuprofen = {2, "Ibuprofen", "Capsule", 50, 7500};
+
+    // Contoh penggunaan stack
+    tambahRiwayatTransaksi(paracetamol);
+    tambahRiwayatTransaksi(ibuprofen);
+    tampilkanRiwayatTransaksi();
+
+    // Contoh penggunaan queue
+    tambahAntrianPelanggan("Galbi");
+    tambahAntrianPelanggan("Anya");
+    layaniPelanggan();
+    layaniPelanggan();
+}
