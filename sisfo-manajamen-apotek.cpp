@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stack>
+#include <queue>
 
 using namespace std;
 
@@ -22,5 +23,20 @@ void tampilkanRiwayatTransaksi() {
         Obat obat = riwayatTransaksi.top();
         cout << "ID: " << obat.id << ", Nama: " << obat.nama << "\n";
         riwayatTransaksi.pop();
+    }
+}
+
+queue<string> antrianPelanggan;
+
+void tambahAntrianPelanggan(string nama) {
+    antrianPelanggan.push(nama);
+}
+
+void layaniPelanggan() {
+    if (!antrianPelanggan.empty()) {
+        cout << "Melayani: " << antrianPelanggan.front() << "\n";
+        antrianPelanggan.pop();
+    } else {
+        cout << "Tidak ada pelanggan dalam antrian.\n";
     }
 }
