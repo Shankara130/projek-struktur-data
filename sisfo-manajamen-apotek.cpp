@@ -15,21 +15,29 @@ struct Obat {
     double harga;
 };
 
-stack<Obat> riwayatTransaksi;
+struct Transaksi {
+    int id;
+    Obat obat;
+    int jumlah;
+    string nama;
+    double total;
+    time_t waktu;
+};
 
-void tambahRiwayatTransaksi(Obat obat) {
-    riwayatTransaksi.push(obat);
-}
+stack<Obat> riwayatTransaksi;
+queue<string> antrianPelanggan;
+unordered_map<int, Obat> daftarObat;
+vector<Transaksi> daftarTransaksi;
 
 void tampilkanRiwayatTransaksi() {
-    while (!riwayatTransaksi.empty()) {
-        Obat obat = riwayatTransaksi.top();
-        cout << "ID: " << obat.id << ", Nama: " << obat.nama << "\n";
-        riwayatTransaksi.pop();
+    for (const Transaksi& transaksi : daftarTransaksi) {
+        cout << "\nID Transaksi: " << transaksi.id << endl;
+        cout << "Obat: " << transaksi.obat.nama << endl;
+        cout << "Jumlah: " << transaksi.jumlah << endl;
+        cout << "Total Harga: " << transaksi.total << endl;
+        cout << "Waktu: " << ctime(&transaksi.waktu) << endl;
     }
 }
-
-queue<string> antrianPelanggan;
 
 void tambahAntrianPelanggan(string nama) {
     antrianPelanggan.push(nama);
@@ -37,10 +45,10 @@ void tambahAntrianPelanggan(string nama) {
 
 void layaniPelanggan() {
     if (!antrianPelanggan.empty()) {
-        cout << "Melayani: " << antrianPelanggan.front() << "\n";
+        cout << "\nMelayani: " << antrianPelanggan.front() << endl;
         antrianPelanggan.pop();
     } else {
-        cout << "Tidak ada pelanggan dalam antrian.\n";
+        cout << "\nTidak ada pelanggan dalam antrian." << endl;
     }
 }
 
@@ -62,12 +70,13 @@ void tambahObat(Obat obat) {
         }
         temp->next = newNode;
     }
+    daftarObat[obat.id] = obat;
 }
 
 void tampilkanObat() {
     Node* temp = head;
     while (temp != nullptr) {
-        cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << "\n";
+        cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << endl;
         temp = temp->next;
     }
 }
@@ -99,7 +108,7 @@ void tampilkanSupplier() {
     if (headSupplier != nullptr) {
         DoubleNode* temp = headSupplier;
         do {
-            cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << "\n";
+            cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << endl;
             temp = temp->next;
         } while (temp != headSupplier);
     }
@@ -146,44 +155,95 @@ public:
 
 Graph rutePengiriman;
 
+int getNextId() {
+    static int id = 0;
+    return ++id;
+}
+
+void tambahTransaksi(Obat obat, int jumlah) {
+    Transaksi transaksi;
+    transaksi.id = getNextId();
+    transaksi.obat = obat;
+    transaksi.jumlah = jumlah;
+    transaksi.total = obat.harga * jumlah;
+    transaksi.waktu = time(0);
+    daftarTransaksi.push_back(transaksi);
+
+    daftarObat[obat.id].stok -= jumlah;
+}
+
+void menu() {
+    cout << "\nMenu:" << endl;
+    cout << "1. Tambah Antrian Pelanggan" << endl;
+    cout << "2. Layani Pelanggan" << endl;
+    cout << "3. Tambah Transaksi" << endl;
+    cout << "4. Tampilkan Riwayat Transaksi" << endl;
+    cout << "5. Tambah Obat" << endl;
+    cout << "6. Tampilkan Obat" << endl;
+}
+
 int main() {
-    // Contoh penggunaan struct
-    Obat paracetamol = {1, "Paracetamol", "Tablet", 100, 5000};
-    Obat ibuprofen = {2, "Ibuprofen", "Capsule", 50, 7500};
+    int pilihan;
+    do {
+        menu();
+        cout << "Pilihan Menu: ";
+        cin >> pilihan;
+        cin.ignore();
 
-    // Contoh penggunaan stack
-    tambahRiwayatTransaksi(paracetamol);
-    tambahRiwayatTransaksi(ibuprofen);
-    tampilkanRiwayatTransaksi();
+        switch(pilihan) {
+            case 1: {
+                string nama;
+                cout << "Nama Pelanggan: ";
+                getline(cin, nama);
+                tambahAntrianPelanggan(nama);
+                break;
+            }
+            case 2: {
+                layaniPelanggan();
+                break;
+            }
+            case 3: {
+                int idObat, jumlah;
+                cout << "Masukkan ID Obat: ";
+                cin >> idObat;
+                cout << "Masukkan Jumlah: ";
+                cin >> jumlah;
 
-    // Contoh penggunaan queue
-    tambahAntrianPelanggan("Galbi");
-    tambahAntrianPelanggan("Anya");
-    layaniPelanggan();
-    layaniPelanggan();
-
-    // Contoh penggunaan single linked list non circular
-    tambahObat(paracetamol);
-    tambahObat(ibuprofen);
-    tampilkanObat();
-
-    // Contoh penggunaan double linked list circular
-    tambahSupplier(paracetamol);
-    tambahSupplier(ibuprofen);
-    tampilkanSupplier();
-
-    // Contoh penggunaan tree
-    TreeNode* obatKeras = new TreeNode{"Obat Keras", {}};
-    tambahKategori(rootKategori, "Obat Keras");
-    tambahKategori(obatKeras, "Antibiotik");
-    tambahKategori(obatKeras, "Analgesik");
-    tampilkanKategori(rootKategori);
-
-    // Contoh penggunaan graph
-    rutePengiriman.tambahRute("Jakarta", "Bandung");
-    rutePengiriman.tambahRute("Bandung", "Surabaya");
-    rutePengiriman.tambahRute("Jakarta", "Surabaya");
-    rutePengiriman.tampilkanRute();
+                if (daftarObat.find(idObat) != daftarObat.end() && daftarObat[idObat].stok >= jumlah) {
+                    tambahTransaksi(daftarObat[idObat], jumlah);
+                } else {
+                    cout << "Obat tidak ditemukan atau stok tidak cukup." << endl;
+                }
+                break;
+            }
+            case 4: {
+                tampilkanRiwayatTransaksi();
+                break;
+            }
+            case 5: {
+                Obat obat;
+                obat.id = getNextId();
+                cout << "Nama Obat: ";
+                getline(cin, obat.nama);
+                cout << "Jenis Obat: ";
+                getline(cin, obat.jenis);
+                cout << "Stok: ";
+                cin >> obat.stok;
+                cout << "Harga: ";
+                cin >> obat.harga;
+                tambahObat(obat);
+                break;
+            }
+            case 6: {
+                tampilkanObat();
+                break;
+            }
+            default: {
+                cout << "Pilihan tidak valid." << endl;
+            }
+        }
+    } while (pilihan != 0);
+    cout << "Program selesai." << endl;
 
     return 0;
 }
