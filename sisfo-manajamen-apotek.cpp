@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <list>
+#include <ctime>
 
 using namespace std;
 
@@ -22,6 +23,12 @@ struct Transaksi {
     string nama;
     double total;
     time_t waktu;
+};
+
+struct Supplier {
+    int id;
+    string nama;
+    string kontak;
 };
 
 stack<Obat> riwayatTransaksi;
@@ -76,21 +83,25 @@ void tambahObat(Obat obat) {
 void tampilkanObat() {
     Node* temp = head;
     while (temp != nullptr) {
-        cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << endl;
+        cout << "\nID: " << temp->data.id << endl;
+        cout << "Nama: " << temp->data.nama << endl;
+        cout << "Jenis: " << temp->data.jenis << endl;
+        cout << "Stok: " << temp->data.stok << endl;
+        cout << "Harga: " << temp->data.harga << endl;
         temp = temp->next;
     }
 }
 
 struct DoubleNode {
-    Obat data;
+    Supplier data;
     DoubleNode* next;
     DoubleNode* prev;
 };
 
 DoubleNode* headSupplier = nullptr;
 
-void tambahSupplier(Obat obat) {
-    DoubleNode* newNode = new DoubleNode{obat, nullptr, nullptr};
+void tambahSupplier(Supplier supplier) {
+    DoubleNode* newNode = new DoubleNode{supplier, nullptr, nullptr};
     if (headSupplier == nullptr) {
         headSupplier = newNode;
         newNode->next = newNode;
@@ -108,7 +119,9 @@ void tampilkanSupplier() {
     if (headSupplier != nullptr) {
         DoubleNode* temp = headSupplier;
         do {
-            cout << "ID: " << temp->data.id << ", Nama: " << temp->data.nama << endl;
+            cout << "\nID: " << temp->data.id << endl;
+            cout << "Nama: " << temp->data.nama << endl;
+            cout << "Kontak: " << temp->data.kontak << endl;
             temp = temp->next;
         } while (temp != headSupplier);
     }
@@ -128,7 +141,7 @@ void tambahKategori(TreeNode* parent, string kategori) {
 
 void tampilkanKategori(TreeNode* node, int depth = 0) {
     for (int i = 0; i < depth; ++i) cout << "-";
-    cout << node->kategori << "\n";
+    cout << node->kategori << endl;
     for (TreeNode* child : node->children) {
         tampilkanKategori(child, depth + 1);
     }
@@ -148,7 +161,7 @@ public:
             for (string& kota : pair.second) {
                 cout << kota << " ";
             }
-            cout << "\n";
+            cout << endl;
         }
     }
 };
@@ -180,6 +193,8 @@ void menu() {
     cout << "4. Tampilkan Riwayat Transaksi" << endl;
     cout << "5. Tambah Obat" << endl;
     cout << "6. Tampilkan Obat" << endl;
+    cout << "7. Tambah Supplier" << endl;
+    cout << "8. Tampilkan Supplier" << endl;
 }
 
 int main() {
@@ -236,6 +251,20 @@ int main() {
             }
             case 6: {
                 tampilkanObat();
+                break;
+            }
+            case 7: {
+                Supplier supplier;
+                supplier.id = getNextId();
+                cout << "Nama Supplier: ";
+                getline(cin, supplier.nama);
+                cout << "Kontak Supplier: ";
+                getline(cin, supplier.kontak);
+                tambahSupplier(supplier);
+                break;
+            }
+            case 8: {
+                tampilkanSupplier();
                 break;
             }
             default: {
