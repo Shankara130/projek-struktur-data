@@ -34,6 +34,7 @@ struct Supplier {
 stack<Obat> riwayatTransaksi;
 queue<string> antrianPelanggan;
 unordered_map<int, Obat> daftarObat;
+unordered_map<string, vector<Obat>> kategoriObat;
 vector<Transaksi> daftarTransaksi;
 
 void tampilkanRiwayatTransaksi() {
@@ -66,7 +67,7 @@ struct Node {
 
 Node* head = nullptr;
 
-void tambahObat(Obat obat) {
+void tambahObat(Obat obat, const string& kategori) {
     Node* newNode = new Node{obat, nullptr};
     if (head == nullptr) {
         head = newNode;
@@ -78,6 +79,7 @@ void tambahObat(Obat obat) {
         temp->next = newNode;
     }
     daftarObat[obat.id] = obat;
+    kategoriObat[kategori].push_back(obat);
 }
 
 void tampilkanObat() {
@@ -89,6 +91,15 @@ void tampilkanObat() {
         cout << "Stok: " << temp->data.stok << endl;
         cout << "Harga: " << temp->data.harga << endl;
         temp = temp->next;
+    }
+}
+
+void tampilkanObatPerKategori() {
+    for (const auto& pair : kategoriObat) {
+        cout << "Kategori: " << pair.first << endl;
+        for (const Obat& obat : pair.second) {
+            cout << "  ID: " << obat.id << ", Nama: " << obat.nama << ", Stok: " << obat.stok << ", Harga: " << obat.harga << "\n";
+        }
     }
 }
 
@@ -132,7 +143,7 @@ struct TreeNode {
     vector<TreeNode*> children;
 };
 
-TreeNode* rootKategori = new TreeNode{"Obat", {}};
+TreeNode* rootKategori = new TreeNode{"\nObat", {}};
 
 void tambahKategori(TreeNode* parent, string kategori) {
     TreeNode* newNode = new TreeNode{kategori, {}};
@@ -193,8 +204,12 @@ void menu() {
     cout << "4. Tampilkan Riwayat Transaksi" << endl;
     cout << "5. Tambah Obat" << endl;
     cout << "6. Tampilkan Obat" << endl;
-    cout << "7. Tambah Supplier" << endl;
-    cout << "8. Tampilkan Supplier" << endl;
+    cout << "7. Tampilkan Obat per Kategori" << endl;
+    cout << "8. Tambah Supplier" << endl;
+    cout << "9. Tampilkan Supplier" << endl;
+    cout << "10. Tambah Kategori" << endl;
+    cout << "11. Tampilkan Kategori" << endl;
+    cout << "0. Keluar" << endl;
 }
 
 int main() {
@@ -246,7 +261,11 @@ int main() {
                 cin >> obat.stok;
                 cout << "Harga: ";
                 cin >> obat.harga;
-                tambahObat(obat);
+                cin.ignore();
+                string kategori;
+                cout << "Kategori: ";
+                getline(cin, kategori);
+                tambahObat(obat, kategori);
                 break;
             }
             case 6: {
@@ -254,6 +273,10 @@ int main() {
                 break;
             }
             case 7: {
+                tampilkanObatPerKategori();
+                break;
+            }
+            case 8: {
                 Supplier supplier;
                 supplier.id = getNextId();
                 cout << "Nama Supplier: ";
@@ -263,8 +286,47 @@ int main() {
                 tambahSupplier(supplier);
                 break;
             }
-            case 8: {
+            case 9: {
                 tampilkanSupplier();
+                break;
+            }
+            case 10: {
+                string kategori, kategoriInduk;
+                cout << "Kategori: ";
+                getline(cin, kategori);
+                cout << "Kategori Induk: ";
+                getline(cin, kategoriInduk);
+
+                TreeNode* parent = nullptr;
+                if (kategoriInduk.empty()) {
+                    parent = rootKategori;
+                } else {
+                    vector<TreeNode*> queue{rootKategori};
+                    while (!queue.empty()) {
+                        TreeNode* current = queue.back();
+                        queue.pop_back();
+                        if (current->kategori == kategoriInduk) {
+                            parent = current;
+                            break;
+                        }
+                        for (TreeNode* child : current->children) {
+                            queue.push_back(child);
+                        }
+                    }
+                }
+
+                if (parent) {
+                    tambahKategori(parent, kategori);
+                } else {
+                    cout << "Kategori induk tidak ditemukan." << endl;
+                }
+            }
+            case 11: {
+                tampilkanKategori(rootKategori);
+                break;
+            }
+            case 0: {
+                cout << "Keluar dari program." << endl;
                 break;
             }
             default: {
