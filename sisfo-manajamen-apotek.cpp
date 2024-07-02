@@ -209,6 +209,8 @@ void menu() {
     cout << "9. Tampilkan Supplier" << endl;
     cout << "10. Tambah Kategori" << endl;
     cout << "11. Tampilkan Kategori" << endl;
+    cout << "12. Tambah Rute Pengiriman" << endl;
+    cout << "13. Tampilkan Rute Pengiriman" << endl;
     cout << "0. Keluar" << endl;
 }
 
@@ -323,6 +325,18 @@ int main() {
             }
             case 11: {
                 tampilkanKategori(rootKategori);
+                break;
+            }
+            case 12: {
+                string kota1, kota2;
+                cout << "Kota 1: ";
+                getline(cin, kota1);
+                cout << "Kota 2: ";
+                getline(cin, kota2);
+                rutePengiriman.tambahRute(kota1, kota2);
+            }
+            case 13: {
+                rutePengiriman.tampilkanRute();
                 break;
             }
             case 0: {
