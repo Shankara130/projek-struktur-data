@@ -31,7 +31,6 @@ struct Supplier {
     string kontak;
 };
 
-stack<Obat> riwayatTransaksi;
 queue<string> antrianPelanggan;
 unordered_map<int, Obat> daftarObat;
 unordered_map<string, vector<Obat>> kategoriObat;
