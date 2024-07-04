@@ -31,6 +31,7 @@ struct Supplier {
     string kontak;
 };
 
+stack<Transaksi> riwayatTransaksi;
 queue<string> antrianPelanggan;
 unordered_map<int, Obat> daftarObat;
 unordered_map<string, vector<Obat>> kategoriObat;
@@ -43,6 +44,26 @@ void tampilkanRiwayatTransaksi() {
         cout << "Jumlah: " << transaksi.jumlah << endl;
         cout << "Total Harga: " << transaksi.total << endl;
         cout << "Waktu: " << ctime(&transaksi.waktu) << endl;
+    }
+}
+
+void tampilkanRiwayatObatTerjual() {
+    stack<Transaksi> tempStack = riwayatTransaksi;
+    unordered_map<int, int> totalTerjual;
+
+    while (!tempStack.empty()) {
+        Transaksi transaksi = tempStack.top();
+        tempStack.pop();
+        totalTerjual[transaksi.obat.id] += transaksi.jumlah;
+        cout << "\nID Obat: " << transaksi.obat.id << endl;
+        cout << "Nama: " << transaksi.obat.nama << endl;
+        cout << "Jenis: " << transaksi.obat.jenis << endl;
+        cout << "Harga: " << transaksi.obat.harga << endl;
+    }
+
+    cout << "\nTotal Jumlah Terjual:" << endl;
+    for (const auto& pair : totalTerjual) {
+        cout << "ID Obat: " << pair.first << " - Jumlah Terjual: " << pair.second << endl;
     }
 }
 
@@ -178,14 +199,24 @@ public:
 
 Graph rutePengiriman;
 
-int getNextId() {
+int getNextIdObat() {
+    static int id = 0;
+    return ++id;
+}
+
+int getNextIdTransaksi() {
+    static int id = 0;
+    return ++id;
+}
+
+int getNextIdSupplier() {
     static int id = 0;
     return ++id;
 }
 
 void tambahTransaksi(Obat obat, int jumlah) {
     Transaksi transaksi;
-    transaksi.id = getNextId();
+    transaksi.id = getNextIdTransaksi();
     transaksi.obat = obat;
     transaksi.jumlah = jumlah;
     transaksi.total = obat.harga * jumlah;
@@ -193,6 +224,8 @@ void tambahTransaksi(Obat obat, int jumlah) {
     daftarTransaksi.push_back(transaksi);
 
     daftarObat[obat.id].stok -= jumlah;
+
+    riwayatTransaksi.push(transaksi);
 }
 
 void menu() {
@@ -210,6 +243,7 @@ void menu() {
     cout << "11. Tampilkan Kategori" << endl;
     cout << "12. Tambah Rute Pengiriman" << endl;
     cout << "13. Tampilkan Rute Pengiriman" << endl;
+    cout << "14. Tampilkan Riwayat Obat Terjual" << endl;
     cout << "0. Keluar" << endl;
 }
 
@@ -253,7 +287,7 @@ int main() {
             }
             case 5: {
                 Obat obat;
-                obat.id = getNextId();
+                obat.id = getNextIdObat();
                 cout << "Nama Obat: ";
                 getline(cin, obat.nama);
                 cout << "Jenis Obat: ";
@@ -279,7 +313,7 @@ int main() {
             }
             case 8: {
                 Supplier supplier;
-                supplier.id = getNextId();
+                supplier.id = getNextIdSupplier();
                 cout << "Nama Supplier: ";
                 getline(cin, supplier.nama);
                 cout << "Kontak Supplier: ";
@@ -336,6 +370,10 @@ int main() {
             }
             case 13: {
                 rutePengiriman.tampilkanRute();
+                break;
+            }
+            case 14: {
+                tampilkanRiwayatObatTerjual();
                 break;
             }
             case 0: {
